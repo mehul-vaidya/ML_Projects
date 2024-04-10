@@ -72,7 +72,11 @@ def main():
           Loan_Amount_Term=float(Loan_Amount_Term)
           
           prediction = loan_grant_prediction([Gender,Married,Dependents,Education,Self_Employed,ApplicantIncome,CoapplicantIncome,LoanAmount,Loan_Amount_Term,Credit_History,Property_Area  ])
-          st.success(prediction)  
+          if(prediction==1):
+             st.success("Loan can be granted")  
+          if(prediction==0):
+             st.success("Loan should not be  granted")    
+                    
         else:
           st.error("You have entered non numeric data")  
 
