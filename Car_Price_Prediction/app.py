@@ -12,9 +12,9 @@ import pickle
 import streamlit as st
 
 
-loaded_model = pickle.load(open('trained_load_grant_prediction_model.pkl', 'rb'))
+loaded_model = pickle.load(open('trained_car_price_prediction_model.pkl', 'rb'))
 
-def loan_grant_prediction(input_data):
+def car_price_prediction(input_data):
     input_data_as_numpy_array = np.asarray(input_data)
     input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
     prediction = loaded_model.predict(input_data_reshaped)
@@ -30,55 +30,36 @@ def loan_grant_prediction(input_data):
   
 def main():
     
-    st.title('Loan Granting Prediction Web App')  
+    st.title('Car Price Prediction Web App')  
 
     #take input from user
     with st.form("Form 1",clear_on_submit=True):
-      #Gender = st.text_input('Gender')
-      Gender = st.radio("Gender",["Male", "Female"] )
-      #Married = st.text_input('Married')
-      Married = st.radio("Married",["Yes", "No"] )
-      #Dependents = st.text_input('Dependents')
-      Dependents = st.radio("No_of_Dependents",["0","1","2","3","3+"] )
-      #Education = st.text_input('Education')
-      Education = st.radio("Graduate",["Yes","No"])
-      #Self_Employed = st.text_input('Self_Employed')
-      Self_Employed = st.radio("Self_Employed",["Yes","No"])
+      car_year = st.text_input('year')
+      present_price = st.text_input('present_price in lakh')
+      KM_Driven = st.text_input('KM_Driven')
+      Fuel_type = st.radio("Fuel_type",["Petrol", "Diesel , CNG"] )
+      seller_type = st.radio("seller_type",["Dealer", "Individual"] )
+      Transmission = st.radio("Transmission",["Manual", "Automatic"] )
+      Owner = st.text_input('Owner')
 
-      ApplicantIncome = st.text_input('ApplicantIncome')
-      CoapplicantIncome = st.text_input('CoapplicantIncome')
-      LoanAmount = st.text_input('LoanAmount')
-      Loan_Amount_Term = st.text_input('Loan_Amount_Term')
-
-
-      Credit_History = st.radio("Credit_History_Available",["Yes","No"])
-      Property_Area = st.radio("Property_Area",["Rural","Semiurban","Urban"])
-
-      s_state=st.form_submit_button('Loan Granting Prediction')
+      s_state=st.form_submit_button('Predict Car Price')
       if s_state:
-        Gender=1 if Gender=="Male" else 0
-        Married = 1 if Married=="Yes" else 0
-        Dependents = 4 if Dependents=="3+" else int(Dependents)
-        Education = 1 if Education=="Yes" else 0
-        Self_Employed = 1 if Self_Employed=="Yes" else 0
-        Credit_History = 1 if Credit_History=="Yes" else 0
-        Property_Area = 0 if Property_Area=="Rural" else 1 if Property_Area=="Semiurban" else 2
+        Fuel_type = 0 if Fuel_type=="Petrol" else 1 if Fuel_type=="Diesel" else 2
+        seller_type = 0 if seller_type=="Dealer" else 1
+        Transmission = 0 if Transmission=="Manual" else 1
 
         error=False
-        if(ApplicantIncome.isdigit() and CoapplicantIncome.isdigit() and LoanAmount.isdigit() and Loan_Amount_Term.isdigit()):
-          ApplicantIncome=float(ApplicantIncome)
-          CoapplicantIncome=float(CoapplicantIncome)
-          LoanAmount=float(LoanAmount)
-          Loan_Amount_Term=float(Loan_Amount_Term)
-          
-          prediction = loan_grant_prediction([Gender,Married,Dependents,Education,Self_Employed,ApplicantIncome,CoapplicantIncome,LoanAmount,Loan_Amount_Term,Credit_History,Property_Area  ])
-          if(prediction==1):
-             st.success("Loan can be granted")  
-          if(prediction==0):
-             st.success("Loan should not be  granted")    
+        if(car_year.isdigit() and present_price.isdigit() and KM_Driven.isdigit() and Owner.isdigit() and int(car_year)>1900 and int(car_year)<2100 ):
+          car_year=int(car_year)
+          present_price=float(present_price)/100000
+          KM_Driven=int(KM_Driven)
+          Owner=int(Owner)
+
+          prediction = car_price_prediction([car_year,present_price,KM_Driven,Fuel_type,seller_type,Transmission,Owner])
+          st.success("Car's predicted price is " + str('{0:.2f}'.format(prediction)) + " Lakhs")  
                     
         else:
-          st.error("You have entered non numeric data")  
+          st.error("You have entered incorrect data")  
 
 if __name__ == '__main__':
     main()
